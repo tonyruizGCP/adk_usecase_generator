@@ -2,9 +2,9 @@ from google.adk.agents import LlmAgent
 from tools import web_research_tool, demo_packaging_tool
 
 # Using a more capable model is better for orchestration
-ORCHESTRATION_MODEL = "gemini-1.5-pro-latest" 
+ORCHESTRATION_MODEL = "gemini-3-pro-preview" 
 # A faster model can be used for more specific tasks
-TASK_MODEL = "gemini-1.5-flash-latest"
+TASK_MODEL = "gemini-3-flash-preview"
 
 # 1. Define the Research Agent
 researcher = LlmAgent(
@@ -18,7 +18,7 @@ researcher = LlmAgent(
 # 2. Define the Narrative Agent
 narrative_creator = LlmAgent(
     name="NarrativeAgent",
-    model=ORCHESTRATION_MODEL, # Use a more capable model for creative generation
+    model=TASK_MODEL, # Use a more capable model for creative generation
     instruction="""You are a creative storyteller and a technical expert.
     Your task is to take research findings and a use case, and do two things:
     1. Create a compelling demo script in HTML format that a CE can present.

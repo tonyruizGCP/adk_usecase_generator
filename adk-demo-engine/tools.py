@@ -1,5 +1,5 @@
 import json
-from google.adk.tools import tool
+from google.adk.tools import FunctionTool as tool
 
 @tool
 def web_research_tool(customer_name: str, industry: str) -> str:

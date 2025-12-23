@@ -10,11 +10,11 @@ def client():
     with app.test_client() as client:
         yield client
 
-@patch('main.coordinator.invoke')
-def test_generate_demo_endpoint(mock_invoke, client):
+@patch('main.InMemoryRunner')
+def test_generate_demo_endpoint(MockRunner, client):
     """
     Tests the /generate-demo endpoint.
-    - Mocks the ADK agent call.
+    - Mocks the ADK runner.
     - Verifies the form data is processed correctly.
     - Verifies a result file is created.
     - Verifies the response contains a link to the new demo.
@@ -24,14 +24,28 @@ def test_generate_demo_endpoint(mock_invoke, client):
         "narrative": "<h3>Mocked Narrative</h3>",
         "files": [{"name": "mock.json", "content": "{}"}]
     })
-    # Mocking the return value of coordinator.invoke to match what main.py expects
-    # main.py expects a list of objects with a 'content' attribute
-    # We can use a simple class or a mock object
-    class MockResponse:
-        def __init__(self, content):
-            self.content = content
+    
+    # Mock events returned by runner.run()
+    # We need to simulate the Event object structure roughly or at least what main.py accesses (event.content.parts[0].text)
+    class MockPart:
+        def __init__(self, text):
+            self.text = text
             
-    mock_invoke.return_value = [MockResponse(mock_agent_output)]
+    class MockContent:
+        def __init__(self, text):
+            self.parts = [MockPart(text)]
+            
+    class MockEvent:
+        def __init__(self, text):
+            self.content = MockContent(text)
+
+    # runner.run() returns a generator
+    def mock_run(*args, **kwargs):
+        yield MockEvent(mock_agent_output)
+
+    # Setup the mock runner instance
+    mock_runner_instance = MockRunner.return_value
+    mock_runner_instance.run.side_effect = mock_run
 
     # 2. Simulate a POST request to the endpoint
     response = client.post('/generate-demo', data={
@@ -41,11 +55,21 @@ def test_generate_demo_endpoint(mock_invoke, client):
     })
 
     # 3. Assertions
-    # Assert that the agent was called once with the correct prompt structure
-    mock_invoke.assert_called_once()
-    call_args = mock_invoke.call_args[0][0]
-    assert 'MockCustomer' in call_args
-    assert 'MockIndustry' in call_args
+    # Assert that the runner was initialized
+    MockRunner.assert_called()
+    
+    # Assert run was called
+    mock_runner_instance.run.assert_called_once()
+    
+    call_kwargs = mock_runner_instance.run.call_args[1]
+    # Check that new_message contains the prompt with properly formatted text
+    # types.Content is not easily equality checked if mocked, but we can check the text inside if we inspect the arg
+    # However, 'new_message' arg will be a real types.Content object from main.py import.
+    # We can check if prompt contains our Inputs
+    input_message = call_kwargs['new_message']
+    prompt_text = input_message.parts[0].text
+    assert 'MockCustomer' in prompt_text
+    assert 'MockIndustry' in prompt_text
     
     # Assert the web response is successful
     assert response.status_code == 200
@@ -53,6 +77,7 @@ def test_generate_demo_endpoint(mock_invoke, client):
     # Assert the response HTML contains a link to the generated demo
     response_text = response.get_data(as_text=True)
     assert 'Demo Ready!' in response_text or 'href="/generated_demos/demo_' in response_text
+
 
     # Clean up created file (optional, but good practice)
     # This requires more complex logic to find the created file, but shows intent
