@@ -1,0 +1,19 @@
+{
+  "eval_set_name": "researcher_eval",
+  "eval_set": [
+    {
+      "sample_id": "researcher_001",
+      "inputs": {
+        "prompt": "Find research on customer 'Globex' in the 'Energy' industry."
+      },
+      "golden_outputs": {
+        "assertions": [
+          {
+            "assertion_type": "REGEX",
+            "expected": ".*Globex.*Energy.*"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "eval_set_name": "coordinator_e2e_eval",
+  "eval_set": [
+    {
+      "sample_id": "coordinator_001",
+      "inputs": {
+        "prompt": "Create a complete demo asset for customer 'Cyberdyne Systems', who is in the 'Defense' industry. The demo should focus on the use case: 'Automated Threat Detection'."
+      },
+      "golden_outputs": {
+        "assertions": [
+          {
+            "assertion_type": "JSON_VALID"
+          },
+          {
+            "assertion_type": "JSON_SCHEMA_CONTAINS_KEYS",
+            "expected": ["narrative", "files"]
+          }
+        ]
+      }
+    }
+  ]
+}
