@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentic Demo Generation Engine</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Agentic Demo Generation Engine</h1>
+        <p>Define your customer and use case, and let our multi-agent system build the demo assets for you.</p>
+        
+        {% if demo_url %}
+        <div class="output-url">
+            <h3>Success!</h3>
+            <p>Your demo has been generated.</p>
+            <a href="{{ demo_url }}" target="_blank">View Generated Demo</a>
+        </div>
+        {% endif %}
+
+        <form action="/generate-demo" method="POST">
+            <label for="customer_name">Customer Name</label>
+            <input type="text" id="customer_name" name="customer_name" placeholder="e.g. Acme Corp" required>
+
+            <label for="industry">Industry</label>
+            <input type="text" id="industry" name="industry" placeholder="e.g. Retail, Healthcare, Finance" required>
+
+            <label for="use_case">Use Case</label>
+            <input type="text" id="use_case" name="use_case" placeholder="e.g. Optimize supply chain using predictive analytics" required>
+
+            <button type="submit">Generate Demo Assets</button>
+        </form>
+    </div>
+</body>
+</html>

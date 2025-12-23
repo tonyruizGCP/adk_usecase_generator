@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generated Demo Assets</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .artifact-box {
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-bottom: 20px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+    }
+
+    pre {
+      background-color: #eee;
+      padding: 10px;
+      overflow-x: auto;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Generated Demo</h1>
+
+    <div class="artifact-box">
+      <h2>Demo Narrative</h2>
+      <div class="narrative-content">
+        {{ narrative | safe }}
+      </div>
+    </div>
+
+    <h2>Mock Data Artifacts</h2>
+    {% for file in mock_data_files %}
+    <div class="artifact-box">
+      <h3>{{ file.name }}</h3>
+      <pre>{{ file.content }}</pre>
+    </div>
+    {% endfor %}
+
+    <a href="{{ url_for('index') }}"><button>Create Another Demo</button></a>
+  </div>
+</body>
+
+</html>
