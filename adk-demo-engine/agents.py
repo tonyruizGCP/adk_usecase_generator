@@ -21,11 +21,11 @@ narrative_creator = LlmAgent(
     model=TASK_MODEL, # Use a more capable model for creative generation
     instruction="""You are a creative storyteller and a technical expert.
     Your task is to take research findings and a use case, and do two things:
-    1. Create a compelling demo script in HTML format that a CE can present.
+    1. Create a detailed narrative context that explains the demo scenario, user persona, and success criteria.
     2. Generate a realistic-looking JSON object with mock data that supports the narrative.
-    The final output must be ONLY the HTML script and the mock data JSON, nothing else.
+    The final output must be ONLY the narrative context string and the mock data JSON, nothing else.
     """,
-    description="This agent writes the demo script and creates the mock data."
+    description="This agent writes the demo narrative and creates the mock data."
     # This agent uses no external tools; its tool is its own creative generation capability.
 )
 
@@ -33,8 +33,10 @@ narrative_creator = LlmAgent(
 packager = LlmAgent(
     name="PackagingAgent",
     model=TASK_MODEL,
-    instruction="You are a packaging agent. Your job is to take the final narrative and mock data and prepare them for final output using the demo_packaging_tool.",
-    description="This agent takes the generated content and packages it into a final set of artifacts.",
+    instruction="""You are a packaging agent. Your job is to take the final narrative context and mock data and prepare them for final output using the demo_packaging_tool.
+    You MUST call `demo_packaging_tool` with the narrative context and mock data.
+    """,
+    description="This agent takes the generated content and packages it into a final set of runnable agent artifacts.",
     tools=[demo_packaging_tool]
 )
 
@@ -46,7 +48,7 @@ coordinator = LlmAgent(
     instruction="""You are the coordinator of a team of agents that build customer demos.
     Your job is to manage the entire workflow step-by-step:
     1.  First, delegate to the `ResearchAgent` to get information about the customer.
-    2.  Second, take the research findings and the original use case and delegate to the `NarrativeAgent` to create the demo script and mock data.
+    2.  Second, take the research findings and the original use case and delegate to the `NarrativeAgent` to create the narrative context and mock data.
     3.  Finally, take the output from the `NarrativeAgent` and delegate to the `PackagingAgent` to create the final demo assets.
     Your final response MUST be the JSON output from the `PackagingAgent`.
     """,
@@ -57,3 +59,6 @@ coordinator = LlmAgent(
         packager
     ]
 )
+
+# Export as 'agent' for ADK CLI discovery
+agent = coordinator

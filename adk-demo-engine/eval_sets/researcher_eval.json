@@ -1,19 +1,27 @@
 {
-  "eval_set_name": "researcher_eval",
-  "eval_set": [
+  "eval_set_id": "researcher_eval",
+  "name": "Researcher Agent Evaluation",
+  "eval_cases": [
     {
-      "sample_id": "researcher_001",
-      "inputs": {
-        "prompt": "Find research on customer 'Globex' in the 'Energy' industry."
-      },
-      "golden_outputs": {
-        "assertions": [
-          {
-            "assertion_type": "REGEX",
-            "expected": ".*Globex.*Energy.*"
+      "eval_id": "researcher_001",
+      "conversation": [
+        {
+          "user_content": {
+            "parts": [
+              {
+                "text": "Find research on customer 'Globex' in the 'Energy' industry."
+              }
+            ]
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "Globex is a leading player in the Energy sector..."
+              }
+            ]
           }
-        ]
-      }
+        }
+      ]
     }
   ]
 }

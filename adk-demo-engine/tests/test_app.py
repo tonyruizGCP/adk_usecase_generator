@@ -47,6 +47,11 @@ def test_generate_demo_endpoint(MockRunner, client):
     mock_runner_instance = MockRunner.return_value
     mock_runner_instance.run.side_effect = mock_run
 
+    # Configure session_service.create_session to be awaitable
+    async def mock_create_session(*args, **kwargs):
+        pass
+    mock_runner_instance.session_service.create_session.side_effect = mock_create_session
+
     # 2. Simulate a POST request to the endpoint
     response = client.post('/generate-demo', data={
         'customer_name': 'MockCustomer',

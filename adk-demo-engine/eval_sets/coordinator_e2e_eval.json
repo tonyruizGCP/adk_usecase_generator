@@ -1,22 +1,27 @@
 {
-  "eval_set_name": "coordinator_e2e_eval",
-  "eval_set": [
+  "eval_set_id": "coordinator_e2e_eval",
+  "name": "Coordinator E2E Evaluation",
+  "eval_cases": [
     {
-      "sample_id": "coordinator_001",
-      "inputs": {
-        "prompt": "Create a complete demo asset for customer 'Cyberdyne Systems', who is in the 'Defense' industry. The demo should focus on the use case: 'Automated Threat Detection'."
-      },
-      "golden_outputs": {
-        "assertions": [
-          {
-            "assertion_type": "JSON_VALID"
+      "eval_id": "coordinator_001",
+      "conversation": [
+        {
+          "user_content": {
+            "parts": [
+              {
+                "text": "Create a complete demo asset for customer 'Acme Corp', who is in the 'Retail' industry. The demo should focus on the use case: 'Predictive Analytics for Inventory'."
+              }
+            ]
           },
-          {
-            "assertion_type": "JSON_SCHEMA_CONTAINS_KEYS",
-            "expected": ["narrative", "files"]
+          "final_response": {
+            "parts": [
+              {
+                "text": "<html>"
+              }
+            ]
           }
-        ]
-      }
+        }
+      ]
     }
   ]
 }

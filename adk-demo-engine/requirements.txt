@@ -1,4 +1,4 @@
-google-adk
+google-adk[eval]
 Flask
 pytest
 mock

@@ -3,6 +3,8 @@ from agents import coordinator
 from google.adk.runners import InMemoryRunner
 from google.genai import types
 
+
+import asyncio
 import json
 import os
 import uuid
@@ -35,6 +37,15 @@ def generate_demo():
         session_id = str(uuid.uuid4())
         runner = InMemoryRunner(agent=coordinator)
         
+        # Explicitly create the session
+        asyncio.run(
+            runner.session_service.create_session(
+                app_name="InMemoryRunner",
+                user_id="demo_user",
+                session_id=session_id
+            )
+        )
+        
         # Execute the agent synchronously
         events = runner.run(
             user_id="demo_user",
@@ -59,39 +70,32 @@ def generate_demo():
 
         # The output is expected to be the JSON string from the packaging tool
         # ADK might return thoughts + JSON. We need to extract the JSON.
-        # However, PackagingAgent is instructed to return *only* the JSON is tricky with LLMs.
-        # But let's assume the final output text contains the JSON.
-        # We might need to clean markdown code blocks.
-        
         cleaned_output = final_output_text
         if "```json" in cleaned_output:
             cleaned_output = cleaned_output.split("```json")[1].split("```")[0].strip()
         elif "```" in cleaned_output:
-            # Maybe just ``` without json
-             cleaned_output = cleaned_output.split("```")[1].split("```")[0].strip()
+            cleaned_output = cleaned_output.split("```")[1].split("```")[0].strip()
 
         agent_output = json.loads(cleaned_output)
         
-        narrative = agent_output.get('narrative', '')
-        mock_data_files = agent_output.get('files', [])
+        # New structure: {"files": [{"name": "path/to/file", "content": "..."}]}
+        files = agent_output.get('files', [])
 
-        # Render the full demo HTML using the template
-        template = app.jinja_env.get_template('demo_template.html')
-        rendered_demo = template.render(
-            narrative=narrative,
-            mock_data_files=mock_data_files
-        )
+        # Create a unique directory for this demo
+        demo_id = str(uuid.uuid4())
+        demo_dir = os.path.join(GENERATED_DEMOS_DIR, demo_id)
+        os.makedirs(demo_dir, exist_ok=True)
 
-        # Save to a file
-        filename = f"demo_{uuid.uuid4()}.html"
-        filepath = os.path.join(GENERATED_DEMOS_DIR, filename)
-        with open(filepath, 'w') as f:
-            f.write(rendered_demo)
+        saved_files = []
+        for file_info in files:
+            file_path = os.path.join(demo_dir, file_info['name'])
+            # Ensure parent directories exist (e.g. for my_agent/agent.py)
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+            with open(file_path, 'w') as f:
+                f.write(file_info['content'])
+            saved_files.append(file_info['name'])
 
-        # Generate URL for the new file
-        demo_url = f"/generated_demos/{filename}"
-
-        return render_template('index.html', demo_url=demo_url)
+        return render_template('index.html', success=True, demo_id=demo_id, files=saved_files)
 
     except Exception as e:
         print(f"Error generating demo: {e}")

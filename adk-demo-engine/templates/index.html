@@ -11,11 +11,15 @@
         <h1>Agentic Demo Generation Engine</h1>
         <p>Define your customer and use case, and let our multi-agent system build the demo assets for you.</p>
         
-        {% if demo_url %}
+        {% if success %}
         <div class="output-url">
-            <h3>Success!</h3>
-            <p>Your demo has been generated.</p>
-            <a href="{{ demo_url }}" target="_blank">View Generated Demo</a>
+            <h3>Success! Agent Generated</h3>
+            <p>Your demo agent has been generated with ID: {{ demo_id }}</p>
+            <ul>
+                {% for file in files %}
+                <li>{{ file }}</li>
+                {% endfor %}
+            </ul>
         </div>
         {% endif %}
 

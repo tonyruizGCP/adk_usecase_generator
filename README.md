@@ -51,7 +51,7 @@ hackathon_adk_gen/
 *   Python 3.8+
 *   A Google Cloud Project with Vertex AI API enabled.
 *   `GOOGLE_API_KEY` environment variable set.
-*   `pip` installed.
+*   `uv` (recommended) or `pip`.
 
 ### Installation
 
@@ -61,12 +61,34 @@ hackathon_adk_gen/
     cd hackathon_adk_gen
     ```
 
-2.  **Install dependencies**:
+2.  **Set up Virtual Environment**:
+    It is highly recommended to use a virtual environment.
+    
+    **Using uv (Recommended):**
     ```bash
-    pip install -r adk-demo-engine/requirements.txt
+    cd adk-demo-engine
+    uv venv
+    source .venv/bin/activate
     ```
 
-3.  **Set your API Key**:
+    **Using standard venv:**
+    ```bash
+    cd adk-demo-engine
+    python3 -m venv .venv
+    source .venv/bin/activate
+    ```
+
+3.  **Install dependencies**:
+    Ensure your virtual environment is activated.
+    ```bash
+    # using uv
+    uv pip install -r requirements.txt
+    
+    # OR using standard pip
+    pip install -r requirements.txt
+    ```
+
+4.  **Set your API Key**:
     ```bash
     export GOOGLE_API_KEY="your_actual_api_key_here"
     ```
@@ -75,10 +97,11 @@ hackathon_adk_gen/
 
 This project includes a comprehensive testing strategy covering unit tests, integration tests, and agent evaluations.
 
-All commands should be run from inside the `adk-demo-engine` directory.
+**Ensure your virtual environment is activated before running tests!**
 
 ```bash
 cd adk-demo-engine
+source .venv/bin/activate
 ```
 
 ### 1. Component Testing (Unit Tests)
@@ -94,25 +117,25 @@ PYTHONPATH=. pytest tests/test_app.py
 ```
 
 ### 3. Agent Evaluation (ADK Evals)
-Uses the `adk eval` command to test the behavior of the agents against defined golden datasets.
-
-**Evaluate the Research Agent:**
-```bash
-adk eval agents.researcher eval_sets/researcher_eval.json
-```
+Uses the `adk eval` command to test the behavior of the agents against defined golden datasets. This requires the `google-adk[eval]` optional dependency (included in updated requirements.txt).
 
 **Evaluate the Full E2E Workflow (Coordinator):**
+This command evaluates the `Coordinator` agent (exposed as the root agent) using the end-to-end evaluation set.
+
 ```bash
-adk eval agents.coordinator eval_sets/coordinator_e2e_eval.json
+adk eval . eval_sets/coordinator_e2e_eval.json
 ```
+
+*Note: Required environment variables (like `GOOGLE_API_KEY`) must be set.*
 
 ## 🖥️ Usage
 
 1.  **Run the Application**:
+    Ensure your virtual environment is activated.
     ```bash
-    python adk-demo-engine/main.py
+    source .venv/bin/activate
+    python main.py
     ```
-    *Note: If you are already inside `adk-demo-engine`, run `python main.py`.*
 
 2.  **Access the Web UI**:
     Open your browser to `http://localhost:5000`.
