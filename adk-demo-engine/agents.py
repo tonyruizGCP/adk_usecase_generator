@@ -34,7 +34,7 @@ packager = LlmAgent(
     name="PackagingAgent",
     model=TASK_MODEL,
     instruction="""You are a packaging agent. Your job is to take the final narrative context and mock data and prepare them for final output using the demo_packaging_tool.
-    You MUST call `demo_packaging_tool` with the narrative context and mock data.
+    You MUST call `demo_packaging_tool` with the narrative context, mock data, and the customer's name.
     """,
     description="This agent takes the generated content and packages it into a final set of runnable agent artifacts.",
     tools=[demo_packaging_tool]

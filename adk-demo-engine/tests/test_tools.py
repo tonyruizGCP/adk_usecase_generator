@@ -18,16 +18,26 @@ def test_demo_packaging_tool():
     customer = "Test Customer"
     
     result_json_str = demo_packaging_tool.func(
-        narrative_html=narrative,
+        narrative_context=narrative,
         mock_data_json_string=mock_data_str,
         customer_name=customer
     )
     
     # Validate the output is a valid JSON string with the correct structure
+    # Validate the output is a valid JSON string with the correct structure
     result_data = json.loads(result_json_str)
-    assert "narrative" in result_data
     assert "files" in result_data
-    assert result_data["narrative"] == narrative
-    assert len(result_data["files"]) == 2
-    assert result_data["files"][0]["name"] == "simulated_api_response.json"
-    assert "Test finding" in result_data["files"][1]["content"]
+    
+    # Check that we have the expected files for an agent
+    filenames = [f['name'] for f in result_data['files']]
+    assert "my_agent/agent.py" in filenames
+    assert "my_agent/mock_data.json" in filenames
+    assert "my_agent/README.md" in filenames
+    
+    # Verify content of specific files
+    for file_info in result_data['files']:
+        if file_info['name'] == "my_agent/mock_data.json":
+            content = json.loads(file_info['content'])
+            assert "analysis_results" in content
+        if file_info['name'] == "my_agent/agent.py":
+            assert "LlmAgent" in file_info['content']

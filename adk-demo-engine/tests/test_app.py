@@ -21,8 +21,10 @@ def test_generate_demo_endpoint(MockRunner, client):
     """
     # 1. Define the mock return value from the ADK agent
     mock_agent_output = json.dumps({
-        "narrative": "<h3>Mocked Narrative</h3>",
-        "files": [{"name": "mock.json", "content": "{}"}]
+        "files": [
+            {"name": "my_agent/agent.py", "content": "print('hello')"},
+            {"name": "my_agent/mock_data.json", "content": "{}"}
+        ]
     })
     
     # Mock events returned by runner.run()
@@ -81,7 +83,8 @@ def test_generate_demo_endpoint(MockRunner, client):
     
     # Assert the response HTML contains a link to the generated demo
     response_text = response.get_data(as_text=True)
-    assert 'Demo Ready!' in response_text or 'href="/generated_demos/demo_' in response_text
+    assert 'Success! Agent Generated' in response_text
+    assert 'my_agent/agent.py' in response_text
 
 
     # Clean up created file (optional, but good practice)
